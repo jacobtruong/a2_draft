@@ -1,9 +1,11 @@
 package dev.jacob.a2_draft.model;
 
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 @Data
@@ -26,4 +28,8 @@ public class Customer {
 
     @Column(name = "email")
     private String email;
+
+    @CreationTimestamp
+    @Column(name = "date_created", nullable = false)
+    private ZonedDateTime dateCreated;
 }

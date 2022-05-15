@@ -1,6 +1,7 @@
 package dev.jacob.a2_draft.model;
 
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -14,7 +15,7 @@ import java.util.Objects;
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long bid;
+    private Long id;
 
     @Column(name = "starting_location")
     private String starting_location;
@@ -33,4 +34,8 @@ public class Booking {
 
     @Column(name = "invoice_id")
     private Long invoice_id;
+
+    @CreationTimestamp
+    @Column(name = "date_created", nullable = false)
+    private ZonedDateTime dateCreated;
 }
