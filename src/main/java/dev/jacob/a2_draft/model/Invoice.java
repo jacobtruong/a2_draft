@@ -15,7 +15,7 @@ import java.util.Objects;
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
     @Column(name = "customer_id", nullable = false)
     private Long customer_id;

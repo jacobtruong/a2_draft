@@ -15,7 +15,7 @@ import java.util.Objects;
 public class Driver {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
     @Column(name = "first_name", nullable = false)
     private String first_name;

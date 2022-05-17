@@ -15,7 +15,7 @@ import java.util.Objects;
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
     @Column(name = "first_name")
     private String first_name;
@@ -28,6 +28,9 @@ public class Customer {
 
     @Column(name = "email")
     private String email;
+
+    @Column(name = "address")
+    private String address;
 
     @CreationTimestamp
     @Column(name = "date_created", nullable = false)
