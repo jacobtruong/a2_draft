@@ -25,6 +25,11 @@ public class DriverController {
         return new ResponseEntity<>(driverService.saveDriver(driver), HttpStatus.CREATED);
     }
 
+    @PostMapping("{id}/bookCar")
+    public ResponseEntity<Driver> bookCar(@PathVariable("id") Long driver_id, @RequestParam Long car_id) {
+        return new ResponseEntity<>(driverService.bookCar(driver_id, car_id), HttpStatus.OK);
+    }
+
     // Build get all drivers REST API
     @GetMapping
     public List<Driver> getAllDrivers() {

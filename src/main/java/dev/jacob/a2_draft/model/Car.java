@@ -1,5 +1,6 @@
 package dev.jacob.a2_draft.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -37,6 +38,16 @@ public class Car {
 
     @Column(name = "rpk")
     private float rpk; // Rate per Kilometre
+
+    @Column(name = "having_driver")
+    private boolean having_driver; // If true, car is booked by a driver
+
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @OneToOne(cascade = CascadeType.ALL)
+    private Driver driver;
+
+    @Column(name = "available")
+    private boolean available; // Rate per Kilometre
 
     @CreationTimestamp
     @Column(name = "date_created", nullable = false)

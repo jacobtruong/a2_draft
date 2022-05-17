@@ -1,11 +1,14 @@
 package dev.jacob.a2_draft.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -35,4 +38,9 @@ public class Customer {
     @CreationTimestamp
     @Column(name = "date_created", nullable = false)
     private ZonedDateTime dateCreated;
+
+    @OneToMany(mappedBy = "customer")
+    @JsonIgnore
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private List<Invoice> invoices;
 }

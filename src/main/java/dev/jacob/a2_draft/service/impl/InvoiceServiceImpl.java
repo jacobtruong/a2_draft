@@ -2,22 +2,27 @@ package dev.jacob.a2_draft.service.impl;
 
 import dev.jacob.a2_draft.exception.ResourceNotFoundException;
 import dev.jacob.a2_draft.model.Invoice;
+import dev.jacob.a2_draft.repository.CustomerRepository;
+import dev.jacob.a2_draft.repository.DriverRepository;
 import dev.jacob.a2_draft.repository.InvoiceRepository;
 import dev.jacob.a2_draft.service.InvoiceService;
 
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
     private InvoiceRepository invoiceRepository;
+    private CustomerRepository customerRepository;
+    private DriverRepository driverRepository;
 
-    public InvoiceServiceImpl(InvoiceRepository invoiceRepository) {
+    public InvoiceServiceImpl(InvoiceRepository invoiceRepository, CustomerRepository customerRepository, DriverRepository driverRepository) {
         super();
         this.invoiceRepository = invoiceRepository;
+        this.customerRepository = customerRepository;
+        this.driverRepository = driverRepository;
     }
 
     @Override
@@ -31,7 +36,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public Invoice getInvoice(long id) {
+    public Invoice getInvoice(Long id) {
 //        Optional<Invoice> invoice = invoiceRepository.findById(id);
 //
 //        if(invoice.isPresent()) {
@@ -45,13 +50,13 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public Invoice updateInvoice(Invoice invoice, long id) {
+    public Invoice updateInvoice(Invoice invoice, Long id) {
         // Check if there exists an invoice with ID in DB
         Invoice existingInvoice = invoiceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invoice", "ID", id));
 
         // Update using data from body
-        existingInvoice.setCustomer_id(invoice.getCustomer_id());
-        existingInvoice.setDriver_id(invoice.getDriver_id());
+        existingInvoice.setCustomer(invoice.getCustomer());
+        existingInvoice.setDriver(invoice.getDriver());
         existingInvoice.setTotal_charge(invoice.getTotal_charge());
 
         // Save existing invoice to DB
@@ -61,7 +66,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public void deleteInvoice(long id) {
+    public void deleteInvoice(Long id) {
         Optional<Invoice> invoice = invoiceRepository.findById(id);
 
         // Check if there exists an invoice with ID in DB
@@ -71,7 +76,18 @@ public class InvoiceServiceImpl implements InvoiceService {
         } else {
             throw new ResourceNotFoundException("Invoice", "ID", id);
         }
+    }
 
+    @Override
+    public Invoice createInvoice(Long customer_id, Long driver_id, float cost) {
+        Invoice invoice = new Invoice();
 
+        invoice.setCustomer(customerRepository.getById(customer_id));
+        invoice.setDriver(driverRepository.getById(driver_id));
+        invoice.setTotal_charge(cost);
+
+        invoiceRepository.save(invoice);
+
+        return invoice;
     }
 }

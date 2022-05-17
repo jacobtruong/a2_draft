@@ -32,8 +32,9 @@ public class Booking {
     @Column(name = "distance")
     private float distance;
 
-    @Column(name = "invoice_id")
-    private Long invoice_id;
+    @OneToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name = "invoice")
+    private Invoice invoice;
 
     @CreationTimestamp
     @Column(name = "date_created", nullable = false)

@@ -7,7 +7,8 @@ import java.util.List;
 public interface DriverService {
     Driver saveDriver(Driver driver);
     List<Driver> getAllDrivers();
-    Driver getDriver(long id);
-    Driver updateDriver(Driver driver, long id);
-    void deleteDriver(long id);
+    Driver getDriver(Long id);
+    Driver updateDriver(Driver driver, Long id);
+    void deleteDriver(Long id);
+    Driver bookCar(Long driver_id, Long car_id);
 }

@@ -1,23 +1,26 @@
 package dev.jacob.a2_draft.service.impl;
 
 import dev.jacob.a2_draft.exception.ResourceNotFoundException;
+import dev.jacob.a2_draft.model.Car;
 import dev.jacob.a2_draft.model.Driver;
+import dev.jacob.a2_draft.repository.CarRepository;
 import dev.jacob.a2_draft.repository.DriverRepository;
 import dev.jacob.a2_draft.service.DriverService;
 
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class DriverServiceImpl implements DriverService {
     private DriverRepository driverRepository;
+    private CarRepository carRepository;
 
-    public DriverServiceImpl(DriverRepository driverRepository) {
+    public DriverServiceImpl(DriverRepository driverRepository, CarRepository carRepository) {
         super();
         this.driverRepository = driverRepository;
+        this.carRepository = carRepository;
     }
 
     @Override
@@ -31,7 +34,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Driver getDriver(long id) {
+    public Driver getDriver(Long id) {
 //        Optional<Driver> driver = driverRepository.findById(id);
 //
 //        if(driver.isPresent()) {
@@ -45,7 +48,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Driver updateDriver(Driver driver, long id) {
+    public Driver updateDriver(Driver driver, Long id) {
         // Check if there exists an driver with ID in DB
         Driver existingDriver = driverRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Driver", "ID", id));
 
@@ -63,7 +66,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public void deleteDriver(long id) {
+    public void deleteDriver(Long id) {
         Optional<Driver> driver = driverRepository.findById(id);
 
         // Check if there exists an driver with ID in DB
@@ -73,7 +76,23 @@ public class DriverServiceImpl implements DriverService {
         } else {
             throw new ResourceNotFoundException("Driver", "ID", id);
         }
+    }
 
+    @Override
+    public Driver bookCar(Long driver_id, Long car_id) {
+        Driver driver = driverRepository.findById(driver_id).orElseThrow(() -> new ResourceNotFoundException("Driver", "ID", driver_id));
+        Car car = carRepository.findById(car_id).orElseThrow(() -> new ResourceNotFoundException("Car", "ID", car_id));
 
+        if (car.isHaving_driver()) {
+            throw new RuntimeException(String.format("Car with ID %d has already been booked!\n", car_id));
+        } else {
+            car.setHaving_driver(true);
+            car.setDriver(driver);
+            car.setAvailable(true);
+            carRepository.save(car);
+            // driver.setCar(car);
+        }
+
+        return driver;
     }
 }

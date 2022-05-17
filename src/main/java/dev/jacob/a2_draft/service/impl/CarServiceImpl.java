@@ -31,7 +31,7 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public Car getCar(long id) {
+    public Car getCar(Long id) {
 //        Optional<Car> car = carRepository.findById(id);
 //
 //        if(car.isPresent()) {
@@ -45,7 +45,7 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public Car updateCar(Car car, long id) {
+    public Car updateCar(Car car, Long id) {
         // Check if there exists an car with ID in DB
         Car existingCar = carRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Car", "ID", id));
 
@@ -66,7 +66,7 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public void deleteCar(long id) {
+    public void deleteCar(Long id) {
         Optional<Car> car = carRepository.findById(id);
 
         // Check if there exists an car with ID in DB

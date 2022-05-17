@@ -20,9 +20,14 @@ public class InvoiceController {
     }
 
     // Build create invoice REST API
+//    @PostMapping
+//    public ResponseEntity<Invoice> saveInvoice(@RequestBody Invoice invoice) {
+//        return new ResponseEntity<>(invoiceService.saveInvoice(invoice), HttpStatus.CREATED);
+//    }
+
     @PostMapping
-    public ResponseEntity<Invoice> saveInvoice(@RequestBody Invoice invoice) {
-        return new ResponseEntity<>(invoiceService.saveInvoice(invoice), HttpStatus.CREATED);
+    public ResponseEntity<Invoice> createInvoice(@RequestParam Long cid, @RequestParam Long did, @RequestParam float cost) {
+        return new ResponseEntity<>(invoiceService.createInvoice(cid, did, cost), HttpStatus.CREATED);
     }
 
     // Build get all invoices REST API

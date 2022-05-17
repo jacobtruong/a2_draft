@@ -1,12 +1,14 @@
 package dev.jacob.a2_draft.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
-import java.util.Objects;
+import java.util.List;
 
 @Data
 @Entity
@@ -35,4 +37,14 @@ public class Driver {
     @CreationTimestamp
     @Column(name = "date_created", nullable = false)
     private ZonedDateTime dateCreated;
+
+    @OneToMany(mappedBy = "driver")
+    @JsonIgnore
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private List<Invoice> invoices;
+
+    @JsonIgnore
+//    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @OneToOne(mappedBy = "driver")
+    private Car car;
 }
