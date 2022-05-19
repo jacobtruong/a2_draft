@@ -1,12 +1,12 @@
 package dev.jacob.a2_draft;
 
 import dev.jacob.a2_draft.exception.ResourceNotFoundException;
-import dev.jacob.a2_draft.model.Car;
-import dev.jacob.a2_draft.model.Driver;
-import dev.jacob.a2_draft.repository.CarRepository;
-import dev.jacob.a2_draft.repository.DriverRepository;
-import dev.jacob.a2_draft.service.impl.CarServiceImpl;
-import dev.jacob.a2_draft.service.impl.DriverServiceImpl;
+import dev.jacob.a2_draft.car.Car;
+import dev.jacob.a2_draft.driver.Driver;
+import dev.jacob.a2_draft.car.CarRepository;
+import dev.jacob.a2_draft.driver.DriverRepository;
+import dev.jacob.a2_draft.car.CarServiceImpl;
+import dev.jacob.a2_draft.driver.DriverServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,6 +14,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.Rollback;
 import static org.assertj.core.api.Assertions.*;
 
@@ -86,14 +89,16 @@ public class DriverServiceImplTests {
         mockDrivers.add(driver1);
         mockDrivers.add(driver2);
 
+        Page<Driver> mock = new PageImpl<>(mockDrivers);
+
         // Define behaviour of repository
-        when (driverRepository.findAll()).thenReturn(mockDrivers);
+        when (driverRepository.findAll(PageRequest.of(0, 5))).thenReturn(mock);
 
         // Call service method
-        List<Driver> actualDrivers = driverService.getAllDrivers();
+        Page<Driver> actualDrivers = driverService.getAllDrivers(0);
 
         // Assert the result
-        assertEquals(actualDrivers, mockDrivers);
+        assertEquals(actualDrivers.getContent(), mockDrivers);
     }
 
     @Test

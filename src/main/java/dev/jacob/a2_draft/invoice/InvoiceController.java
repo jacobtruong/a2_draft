@@ -1,7 +1,6 @@
-package dev.jacob.a2_draft.controller;
+package dev.jacob.a2_draft.invoice;
 
-import dev.jacob.a2_draft.model.Invoice;
-import dev.jacob.a2_draft.service.InvoiceService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +32,8 @@ public class InvoiceController {
 
     // Build get all invoices REST API
     @GetMapping
-    public List<Invoice> getAllInvoices() {
-        return invoiceService.getAllInvoices();
+    public Page<Invoice> getAllInvoices(@RequestParam(defaultValue = "1") int page) {
+        return invoiceService.getAllInvoices(page);
     }
 
     @GetMapping("/searchAll")

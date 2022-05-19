@@ -1,12 +1,9 @@
-package dev.jacob.a2_draft.controller;
+package dev.jacob.a2_draft.driver;
 
-import dev.jacob.a2_draft.model.Driver;
-import dev.jacob.a2_draft.service.DriverService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/drivers")
@@ -37,8 +34,8 @@ public class DriverController {
 
     // Build get all drivers REST API
     @GetMapping
-    public List<Driver> getAllDrivers() {
-        return driverService.getAllDrivers();
+    public Page<Driver> getAllDrivers(@RequestParam(defaultValue = "1") int page) {
+        return driverService.getAllDrivers(page);
     }
 
     // Build get driver by specific ID REST API

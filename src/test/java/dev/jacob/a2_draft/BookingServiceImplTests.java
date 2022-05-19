@@ -1,13 +1,15 @@
 package dev.jacob.a2_draft;
 
+import dev.jacob.a2_draft.car.Car;
+import dev.jacob.a2_draft.car.CarRepository;
+import dev.jacob.a2_draft.customer.Customer;
+import dev.jacob.a2_draft.customer.CustomerRepository;
+import dev.jacob.a2_draft.driver.Driver;
 import dev.jacob.a2_draft.exception.ResourceNotFoundException;
-import dev.jacob.a2_draft.model.*;
-import dev.jacob.a2_draft.model.Booking;
-import dev.jacob.a2_draft.repository.*;
-import dev.jacob.a2_draft.repository.BookingRepository;
-import dev.jacob.a2_draft.service.impl.BookingServiceImpl;
-import dev.jacob.a2_draft.service.impl.BookingServiceImpl;
-import dev.jacob.a2_draft.service.impl.BookingServiceImpl;
+import dev.jacob.a2_draft.invoice.Invoice;
+import dev.jacob.a2_draft.booking.Booking;
+import dev.jacob.a2_draft.booking.BookingRepository;
+import dev.jacob.a2_draft.booking.BookingServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,6 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.Rollback;
 import static org.assertj.core.api.Assertions.*;
 
@@ -26,7 +31,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -178,14 +182,16 @@ public class BookingServiceImplTests {
         mockBookings.add(booking1);
         mockBookings.add(booking2);
 
+        Page<Booking> mock = new PageImpl<>(mockBookings);
+
         // Define behaviour of repository
-        when (bookingRepository.findAll()).thenReturn(mockBookings);
+        when (bookingRepository.findAll(PageRequest.of(0,5))).thenReturn(mock);
 
         // Call service method
-        List<Booking> actualBookings = bookingService.getAllBookings();
+        Page<Booking> actualBookings = bookingService.getAllBookings(0);
 
         // Assert the result
-        assertEquals(actualBookings, mockBookings);
+        assertEquals(actualBookings.getContent(), mockBookings);
     }
 
     @Test

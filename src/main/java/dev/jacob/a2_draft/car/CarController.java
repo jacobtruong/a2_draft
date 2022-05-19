@@ -1,7 +1,8 @@
-package dev.jacob.a2_draft.controller;
+package dev.jacob.a2_draft.car;
 
-import dev.jacob.a2_draft.model.Car;
-import dev.jacob.a2_draft.service.CarService;
+import dev.jacob.a2_draft.car.Car;
+import dev.jacob.a2_draft.car.CarService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +28,8 @@ public class CarController {
 
     // Build get all cars REST API
     @GetMapping
-    public List<Car> getAllCars() {
-        return carService.getAllCars();
+    public Page<Car> getAllCars(@RequestParam(defaultValue = "1") int page) {
+        return carService.getAllCars(page);
     }
 
     @GetMapping("/allAvailable")

@@ -1,13 +1,19 @@
-package dev.jacob.a2_draft.service.impl;
+package dev.jacob.a2_draft.booking;
 
+import dev.jacob.a2_draft.car.Car;
+import dev.jacob.a2_draft.car.CarRepository;
+import dev.jacob.a2_draft.customer.Customer;
+import dev.jacob.a2_draft.customer.CustomerRepository;
+import dev.jacob.a2_draft.driver.Driver;
+import dev.jacob.a2_draft.driver.DriverRepository;
 import dev.jacob.a2_draft.exception.ResourceNotFoundException;
-import dev.jacob.a2_draft.model.*;
-import dev.jacob.a2_draft.repository.*;
-import dev.jacob.a2_draft.service.BookingService;
+import dev.jacob.a2_draft.invoice.Invoice;
+import dev.jacob.a2_draft.invoice.InvoiceRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,8 +45,11 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> getAllBookings() {
-        return bookingRepository.findAll();
+    public Page<Booking> getAllBookings(int page) {
+        if (page < 1) {
+            page = 1;
+        }
+        return bookingRepository.findAll(PageRequest.of(page - 1, 5));
     }
 
     @Override

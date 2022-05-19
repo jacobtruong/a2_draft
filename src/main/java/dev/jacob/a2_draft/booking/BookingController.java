@@ -1,15 +1,11 @@
-package dev.jacob.a2_draft.controller;
+package dev.jacob.a2_draft.booking;
 
-import dev.jacob.a2_draft.model.Booking;
-import dev.jacob.a2_draft.model.Invoice;
-import dev.jacob.a2_draft.service.BookingService;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @RestController
@@ -42,8 +38,8 @@ public class BookingController {
 
     // Build get all bookings REST API
     @GetMapping
-    public List<Booking> getAllBookings() {
-        return bookingService.getAllBookings();
+    public Page<Booking> getAllBookings(@RequestParam(defaultValue = "1") int page) {
+        return bookingService.getAllBookings(page);
     }
 
     @GetMapping("/searchAll")

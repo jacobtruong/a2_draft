@@ -1,13 +1,12 @@
-package dev.jacob.a2_draft.service;
+package dev.jacob.a2_draft.booking;
 
-import dev.jacob.a2_draft.model.Booking;
+import org.springframework.data.domain.Page;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 public interface BookingService {
     Booking saveBooking(Booking booking);
-    List<Booking> getAllBookings();
+    Page<Booking> getAllBookings(int page);
     List<Booking> searchBookings(String date, String start_date, String end_date);
     Booking getBooking(Long id);
     Booking updateBooking(Booking booking, Long id);

@@ -1,12 +1,11 @@
-package dev.jacob.a2_draft.service;
+package dev.jacob.a2_draft.driver;
 
-import dev.jacob.a2_draft.model.Driver;
-
-import java.util.List;
+import dev.jacob.a2_draft.driver.Driver;
+import org.springframework.data.domain.Page;
 
 public interface DriverService {
     Driver saveDriver(Driver driver);
-    List<Driver> getAllDrivers();
+    Page<Driver> getAllDrivers(int page);
     Driver getDriver(Long id);
     Driver updateDriver(Driver driver, Long id);
     void deleteDriver(Long id);

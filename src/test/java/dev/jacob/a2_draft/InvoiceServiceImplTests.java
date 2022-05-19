@@ -1,13 +1,14 @@
 package dev.jacob.a2_draft;
 
+import dev.jacob.a2_draft.car.Car;
+import dev.jacob.a2_draft.customer.Customer;
+import dev.jacob.a2_draft.customer.CustomerRepository;
+import dev.jacob.a2_draft.driver.Driver;
+import dev.jacob.a2_draft.driver.DriverRepository;
 import dev.jacob.a2_draft.exception.ResourceNotFoundException;
-import dev.jacob.a2_draft.model.*;
-import dev.jacob.a2_draft.model.Invoice;
-import dev.jacob.a2_draft.repository.*;
-import dev.jacob.a2_draft.repository.InvoiceRepository;
-import dev.jacob.a2_draft.service.impl.BookingServiceImpl;
-import dev.jacob.a2_draft.service.impl.InvoiceServiceImpl;
-import dev.jacob.a2_draft.service.impl.InvoiceServiceImpl;
+import dev.jacob.a2_draft.invoice.Invoice;
+import dev.jacob.a2_draft.invoice.InvoiceRepository;
+import dev.jacob.a2_draft.invoice.InvoiceServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,6 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.Rollback;
 import static org.assertj.core.api.Assertions.*;
 
@@ -26,7 +30,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -145,14 +148,16 @@ public class InvoiceServiceImplTests {
         mockInvoices.add(invoice1);
         mockInvoices.add(invoice2);
 
+        Page<Invoice> mock = new PageImpl<>(mockInvoices);
+
         // Define behaviour of repository
-        when (invoiceRepository.findAll()).thenReturn(mockInvoices);
+        when (invoiceRepository.findAll(PageRequest.of(0, 5))).thenReturn(mock);
 
         // Call service method
-        List<Invoice> actualInvoices = invoiceService.getAllInvoices();
+        Page<Invoice> actualInvoices = invoiceService.getAllInvoices(0);
 
         // Assert the result
-        assertEquals(actualInvoices, mockInvoices);
+        assertEquals(actualInvoices.getContent(), mockInvoices);
     }
 
     @Test
@@ -502,7 +507,7 @@ public class InvoiceServiceImplTests {
         invoice1.setCustomer(customer1);
         invoice1.setDriver(driver1);
         invoice1.setTotal_charge(10 * car1.getRpk());
-        invoice1.setDateCreated(ZonedDateTime.now());
+//        invoice1.setDateCreated(ZonedDateTime.now());
 
         // Define behaviour of repository
         when (invoiceRepository.findById(1L)).thenReturn(Optional.of(invoice1));
@@ -513,7 +518,7 @@ public class InvoiceServiceImplTests {
         invoice2.setCustomer(customer1);
         invoice2.setDriver(driver1);
         invoice2.setTotal_charge(15 * car1.getRpk());
-        invoice2.setDateCreated(ZonedDateTime.now());
+//        invoice2.setDateCreated(ZonedDateTime.now());
 
         // Call service method
         Invoice actualInvoice = invoiceService.updateInvoice(invoice2, 1L);

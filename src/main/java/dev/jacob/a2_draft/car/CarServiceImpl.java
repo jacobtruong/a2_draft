@@ -1,15 +1,13 @@
-package dev.jacob.a2_draft.service.impl;
+package dev.jacob.a2_draft.car;
 
 import dev.jacob.a2_draft.exception.ResourceNotFoundException;
-import dev.jacob.a2_draft.model.Booking;
-import dev.jacob.a2_draft.model.Car;
-import dev.jacob.a2_draft.repository.CarRepository;
-import dev.jacob.a2_draft.service.BookingService;
-import dev.jacob.a2_draft.service.CarService;
+import dev.jacob.a2_draft.booking.Booking;
+import dev.jacob.a2_draft.booking.BookingService;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -31,8 +29,11 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public List<Car> getAllCars() {
-        return carRepository.findAll();
+    public Page<Car> getAllCars(int page) {
+        if (page < 1) {
+            page = 1;
+        }
+        return carRepository.findAll(PageRequest.of(page - 1, 5));
     }
 
     @Override

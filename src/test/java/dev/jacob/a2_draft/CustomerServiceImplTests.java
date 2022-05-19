@@ -1,21 +1,22 @@
 package dev.jacob.a2_draft;
 
 import dev.jacob.a2_draft.exception.ResourceNotFoundException;
-import dev.jacob.a2_draft.model.Customer;
-import dev.jacob.a2_draft.repository.CustomerRepository;
-import dev.jacob.a2_draft.service.impl.CustomerServiceImpl;
+import dev.jacob.a2_draft.customer.Customer;
+import dev.jacob.a2_draft.customer.CustomerRepository;
+import dev.jacob.a2_draft.customer.CustomerServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.Rollback;
 import static org.assertj.core.api.Assertions.*;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -79,14 +80,16 @@ public class CustomerServiceImplTests {
         mockCustomers.add(customer1);
         mockCustomers.add(customer2);
 
+        Page<Customer> mock = new PageImpl<>(mockCustomers);
+
         // Define behaviour of repository
-        when (customerRepository.findAll()).thenReturn(mockCustomers);
+        when (customerRepository.findAll(PageRequest.of(0, 5))).thenReturn(mock);
 
         // Call service method
-        List<Customer> actualCustomers = customerService.getAllCustomers();
+        Page<Customer> actualCustomers = customerService.getAllCustomers(0);
 
         // Assert the result
-        assertEquals(actualCustomers, mockCustomers);
+        assertEquals(actualCustomers.getContent(), mockCustomers);
     }
 
     @Test

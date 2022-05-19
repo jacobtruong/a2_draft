@@ -1,7 +1,6 @@
-package dev.jacob.a2_draft.controller;
+package dev.jacob.a2_draft.customer;
 
-import dev.jacob.a2_draft.model.Customer;
-import dev.jacob.a2_draft.service.CustomerService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +26,8 @@ public class CustomerController {
 
     // Build get all customers REST API
     @GetMapping
-    public List<Customer> getAllCustomers() {
-        return customerService.getAllCustomers();
+    public Page<Customer> getAllCustomers(@RequestParam(defaultValue = "1") int page) {
+        return customerService.getAllCustomers(page);
     }
 
     // Build search customer

@@ -1,15 +1,13 @@
-package dev.jacob.a2_draft.service.impl;
+package dev.jacob.a2_draft.driver;
 
 import dev.jacob.a2_draft.exception.ResourceNotFoundException;
-import dev.jacob.a2_draft.model.Car;
-import dev.jacob.a2_draft.model.Driver;
-import dev.jacob.a2_draft.repository.CarRepository;
-import dev.jacob.a2_draft.repository.DriverRepository;
-import dev.jacob.a2_draft.service.DriverService;
+import dev.jacob.a2_draft.car.Car;
+import dev.jacob.a2_draft.car.CarRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,8 +27,12 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public List<Driver> getAllDrivers() {
-        return driverRepository.findAll();
+    public Page<Driver> getAllDrivers(int page) {
+        if (page < 1) {
+            page = 1;
+        }
+
+        return driverRepository.findAll(PageRequest.of(page - 1, 5));
     }
 
     @Override

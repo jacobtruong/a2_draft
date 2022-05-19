@@ -1,13 +1,14 @@
-package dev.jacob.a2_draft.model;
+package dev.jacob.a2_draft.booking;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import dev.jacob.a2_draft.car.Car;
+import dev.jacob.a2_draft.invoice.Invoice;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
-import java.util.Objects;
 
 @Data
 @Entity

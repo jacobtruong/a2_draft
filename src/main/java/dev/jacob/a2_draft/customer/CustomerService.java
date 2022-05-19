@@ -1,12 +1,13 @@
-package dev.jacob.a2_draft.service;
+package dev.jacob.a2_draft.customer;
 
-import dev.jacob.a2_draft.model.Customer;
+import dev.jacob.a2_draft.customer.Customer;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface CustomerService {
     Customer saveCustomer(Customer customer);
-    List<Customer> getAllCustomers();
+    Page<Customer> getAllCustomers(int page);
     Customer getCustomer(Long id);
     Customer updateCustomer(Customer customer, Long id);
     void deleteCustomer(Long id);

@@ -1,14 +1,14 @@
 package dev.jacob.a2_draft;
 
+import dev.jacob.a2_draft.booking.Booking;
+import dev.jacob.a2_draft.customer.Customer;
+import dev.jacob.a2_draft.driver.Driver;
 import dev.jacob.a2_draft.exception.ResourceNotFoundException;
-import dev.jacob.a2_draft.model.*;
-import dev.jacob.a2_draft.model.Car;
-import dev.jacob.a2_draft.repository.BookingRepository;
-import dev.jacob.a2_draft.repository.CarRepository;
-import dev.jacob.a2_draft.repository.CarRepository;
-import dev.jacob.a2_draft.service.impl.BookingServiceImpl;
-import dev.jacob.a2_draft.service.impl.CarServiceImpl;
-import dev.jacob.a2_draft.service.impl.CarServiceImpl;
+import dev.jacob.a2_draft.invoice.Invoice;
+import dev.jacob.a2_draft.car.Car;
+import dev.jacob.a2_draft.car.CarRepository;
+import dev.jacob.a2_draft.booking.BookingServiceImpl;
+import dev.jacob.a2_draft.car.CarServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,6 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.Rollback;
 import static org.assertj.core.api.Assertions.*;
 
@@ -26,7 +29,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -102,14 +104,16 @@ public class CarServiceImplTests {
         mockCars.add(car1);
         mockCars.add(car2);
 
+        Page<Car> mock = new PageImpl<>(mockCars);
+
         // Define behaviour of repository
-        when (carRepository.findAll()).thenReturn(mockCars);
+        when (carRepository.findAll(PageRequest.of(0, 5))).thenReturn(mock);
 
         // Call service method
-        List<Car> actualCars = carService.getAllCars();
+        Page<Car> actualCars = carService.getAllCars(0);
 
         // Assert the result
-        assertEquals(actualCars, mockCars);
+        assertEquals(actualCars.getContent(), mockCars);
     }
 
     @Test

@@ -1,6 +1,6 @@
-package dev.jacob.a2_draft.repository;
+package dev.jacob.a2_draft.customer;
 
-import dev.jacob.a2_draft.model.Customer;
+import dev.jacob.a2_draft.customer.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {

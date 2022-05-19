@@ -1,12 +1,12 @@
-package dev.jacob.a2_draft.service;
+package dev.jacob.a2_draft.car;
 
-import dev.jacob.a2_draft.model.Car;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface CarService {
     Car saveCar(Car car);
-    List<Car> getAllCars();
+    Page<Car> getAllCars(int page);
     List<Car> getAllAvailableCars();
     Car getCar(Long id);
     Car updateCar(Car car, Long id);

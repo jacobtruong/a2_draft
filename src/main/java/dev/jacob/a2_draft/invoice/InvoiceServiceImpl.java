@@ -1,25 +1,17 @@
-package dev.jacob.a2_draft.service.impl;
+package dev.jacob.a2_draft.invoice;
 
 import dev.jacob.a2_draft.exception.ResourceNotFoundException;
-import dev.jacob.a2_draft.model.Customer;
-import dev.jacob.a2_draft.model.Driver;
-import dev.jacob.a2_draft.model.Invoice;
-import dev.jacob.a2_draft.repository.CustomerRepository;
-import dev.jacob.a2_draft.repository.DriverRepository;
-import dev.jacob.a2_draft.repository.InvoiceRepository;
-import dev.jacob.a2_draft.service.InvoiceService;
+import dev.jacob.a2_draft.customer.Customer;
+import dev.jacob.a2_draft.driver.Driver;
+import dev.jacob.a2_draft.customer.CustomerRepository;
+import dev.jacob.a2_draft.driver.DriverRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.util.DateUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -41,8 +33,12 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public List<Invoice> getAllInvoices() {
-        return invoiceRepository.findAll();
+    public Page<Invoice> getAllInvoices(int page) {
+        if (page < 1) {
+            page = 1;
+        }
+
+        return invoiceRepository.findAll(PageRequest.of(page - 1, 5));
     }
 
     @Override
