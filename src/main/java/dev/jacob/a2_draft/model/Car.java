@@ -1,12 +1,15 @@
 package dev.jacob.a2_draft.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -42,9 +45,15 @@ public class Car {
     @Column(name = "having_driver")
     private boolean having_driver; // If true, car is booked by a driver
 
+    @EqualsAndHashCode.Exclude
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @OneToOne(cascade = CascadeType.ALL)
     private Driver driver;
+
+    @OneToMany(mappedBy = "car")
+    @JsonIgnore
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private List<Booking> bookings;
 
     @Column(name = "available")
     private boolean available; // Rate per Kilometre

@@ -1,5 +1,6 @@
 package dev.jacob.a2_draft.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -35,6 +36,11 @@ public class Booking {
     @OneToOne(cascade=CascadeType.ALL)
     @JoinColumn(name = "invoice")
     private Invoice invoice;
+
+    @JsonIgnoreProperties({"driver", "hibernateLazyInitializer", "handler"})
+    @ManyToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name = "booking")
+    private Car car;
 
     @CreationTimestamp
     @Column(name = "date_created", nullable = false)

@@ -1,23 +1,28 @@
 package dev.jacob.a2_draft.service.impl;
 
 import dev.jacob.a2_draft.exception.ResourceNotFoundException;
+import dev.jacob.a2_draft.model.Booking;
 import dev.jacob.a2_draft.model.Car;
 import dev.jacob.a2_draft.repository.CarRepository;
+import dev.jacob.a2_draft.service.BookingService;
 import dev.jacob.a2_draft.service.CarService;
 
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 public class CarServiceImpl implements CarService {
     private CarRepository carRepository;
+    private BookingService bookingService;
 
-    public CarServiceImpl(CarRepository carRepository) {
+    public CarServiceImpl(CarRepository carRepository, BookingService bookingService) {
         super();
         this.carRepository = carRepository;
+        this.bookingService = bookingService;
     }
 
     @Override
@@ -28,6 +33,19 @@ public class CarServiceImpl implements CarService {
     @Override
     public List<Car> getAllCars() {
         return carRepository.findAll();
+    }
+
+    @Override
+    public List<Car> getAllAvailableCars() {
+        List<Car> tmp = new ArrayList<>();
+        
+        for (Car car : carRepository.findAll()) {
+            if (car.isAvailable()) {
+                tmp.add(car);
+            }
+        }
+
+        return tmp;
     }
 
     @Override
@@ -63,6 +81,64 @@ public class CarServiceImpl implements CarService {
         carRepository.save(existingCar);
 
         return existingCar;
+    }
+
+    @Override
+    public String getMonthlyCarStatistics(String month) {
+        if (Objects.equals(month, "")) {
+            throw new RuntimeException("No month was inputted!\n");
+        }
+
+        String starting_date = "01 " + month;
+
+        LocalDate query_starting_date = LocalDate.parse(starting_date, DateTimeFormatter.ofPattern("dd MM yyyy"));
+        LocalDate query_ending_date = query_starting_date.withDayOfMonth(query_starting_date.getMonth().length(query_starting_date.isLeapYear()));
+
+        String end_date = query_ending_date.format(DateTimeFormatter.ofPattern("dd MM yyyy"));
+
+        List<Booking> tmp = bookingService.searchBookings("", starting_date, end_date);
+
+        int month_length = Integer.parseInt(end_date.substring(0,2));
+
+        HashSet<Car>[] cars_2d = new HashSet[month_length];
+
+        for (int i = 0; i < month_length; i++) {
+            cars_2d[i] = new HashSet<>();
+        }
+
+        
+
+        for (Booking booking : tmp) {
+            int index = Integer.parseInt(booking.getDateCreated().toString().substring(8,10));
+            Car tmp_car = booking.getCar();
+            cars_2d[index].add(tmp_car);
+        }
+
+        HashMap<Car, Integer> map = new HashMap<Car, Integer>();
+
+        for (int i = 0; i < month_length; i++) {
+            if (cars_2d[i] != null) {
+                for (Car car : cars_2d[i]) {
+                    if (!map.containsKey(car)) {
+                        map.put(car, 1);
+                    } else {
+                        map.put(car, map.get(car) + 1);
+                    }
+                }
+            }
+        }
+
+        Set<Car> cars = map.keySet();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Month: %s\n", month));
+        sb.append("Car             |             Days\n");
+
+        for (Car car : cars) {
+            sb.append(String.format("%s       |             %d\n", car.getLicense_plate(), map.get(car)));
+        }
+
+        return sb.toString();
     }
 
     @Override

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -34,6 +35,21 @@ public class InvoiceController {
     @GetMapping
     public List<Invoice> getAllInvoices() {
         return invoiceService.getAllInvoices();
+    }
+
+    @GetMapping("/searchAll")
+    public ResponseEntity<List<Invoice>> searchInvoice(@RequestParam(defaultValue = "") String date, @RequestParam(defaultValue = "") String start_date, @RequestParam(defaultValue = "") String end_date) throws ParseException {
+        return new ResponseEntity<List<Invoice>>(invoiceService.searchInvoices(date, start_date, end_date), HttpStatus.OK);
+    }
+
+    @GetMapping("/searchByID")
+    public ResponseEntity<List<Invoice>> searchInvoice(@RequestParam(defaultValue = "0") Long customer_id, @RequestParam(defaultValue = "0") Long driver_id, @RequestParam(defaultValue = "") String start_date, @RequestParam(defaultValue = "") String end_date) throws ParseException {
+        return new ResponseEntity<List<Invoice>>(invoiceService.searchInvoices(customer_id, driver_id, start_date, end_date), HttpStatus.OK);
+    }
+
+    @GetMapping("/searchByID/revenue")
+    public ResponseEntity<String> getRevenue(@RequestParam(defaultValue = "0") Long customer_id, @RequestParam(defaultValue = "0") Long driver_id, @RequestParam(defaultValue = "") String start_date, @RequestParam(defaultValue = "") String end_date) throws ParseException {
+        return new ResponseEntity<>(String.format("Total revenue: %.2f", invoiceService.getRevenue(customer_id, driver_id, start_date, end_date)), HttpStatus.OK);
     }
 
     // Build get invoice by specific ID REST API

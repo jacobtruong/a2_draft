@@ -31,22 +31,32 @@ public class CarController {
         return carService.getAllCars();
     }
 
+    @GetMapping("/allAvailable")
+    public List<Car> getAllAvailableCars() {
+        return carService.getAllAvailableCars();
+    }
+
+    @GetMapping("/getMonthlyStatistics")
+    public ResponseEntity<String> getMonthlyStatistics(@RequestParam(defaultValue = "") String month) {
+        return new ResponseEntity<>(carService.getMonthlyCarStatistics(month), HttpStatus.OK);
+    }
+
     // Build get car by specific ID REST API
     // api/cars/1
     @GetMapping("{id}")
-    public ResponseEntity<Car> getCarById(@PathVariable("id") long id) {
+    public ResponseEntity<Car> getCarById(@PathVariable("id") Long id) {
         return new ResponseEntity<Car>(carService.getCar(id), HttpStatus.OK);
     }
 
     // Build update car REST API
     @PutMapping("{id}")
-    public ResponseEntity<Car>updateCar(@PathVariable("id") long id, @RequestBody Car car) {
+    public ResponseEntity<Car>updateCar(@PathVariable("id") Long id, @RequestBody Car car) {
         return new ResponseEntity<Car>(carService.updateCar(car, id), HttpStatus.OK);
     }
 
     // Build delete car REST API
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteCar(@PathVariable("id") long id) {
+    public ResponseEntity<String> deleteCar(@PathVariable("id") Long id) {
         // Deleting car from db
         carService.deleteCar(id);
 

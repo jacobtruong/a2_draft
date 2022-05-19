@@ -1,6 +1,8 @@
 package dev.jacob.a2_draft.service.impl;
 
 import dev.jacob.a2_draft.exception.ResourceNotFoundException;
+import dev.jacob.a2_draft.model.Customer;
+import dev.jacob.a2_draft.model.Driver;
 import dev.jacob.a2_draft.model.Invoice;
 import dev.jacob.a2_draft.repository.CustomerRepository;
 import dev.jacob.a2_draft.repository.DriverRepository;
@@ -8,9 +10,17 @@ import dev.jacob.a2_draft.repository.InvoiceRepository;
 import dev.jacob.a2_draft.service.InvoiceService;
 
 import org.springframework.stereotype.Service;
+import org.thymeleaf.util.DateUtils;
 
-import java.util.List;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
@@ -33,6 +43,117 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public List<Invoice> getAllInvoices() {
         return invoiceRepository.findAll();
+    }
+
+    @Override
+    public List<Invoice> searchInvoices(String date, String start_date, String end_date) {
+        List<Invoice> tmp = new ArrayList<>();
+
+        if (!Objects.equals(date, "")) {
+            LocalDate query_date = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd MM yyyy"));
+
+            for (Invoice invoice : invoiceRepository.findAll()) {
+                LocalDate tmp_date = LocalDate.parse(invoice.getDateCreated().toString().substring(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                if (tmp_date.isEqual(query_date)) {
+                    tmp.add(invoice);
+                }
+            }
+
+            return tmp;
+        }
+
+        if (Objects.equals(start_date, "") && Objects.equals(end_date, "")) {
+            return tmp;
+        }
+
+        if (!Objects.equals(start_date, "") && Objects.equals(end_date, "")) {
+            LocalDate query_date = LocalDate.parse(start_date, DateTimeFormatter.ofPattern("dd MM yyyy"));
+
+            for (Invoice invoice : invoiceRepository.findAll()) {
+                LocalDate tmp_date = LocalDate.parse(invoice.getDateCreated().toString().substring(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                if (tmp_date.isAfter(query_date) || tmp_date.isEqual(query_date)) {
+                    tmp.add(invoice);
+                }
+            }
+
+        }
+
+        if (!Objects.equals(start_date, "") && !Objects.equals(end_date, "")) {
+            LocalDate query_start_date = LocalDate.parse(start_date, DateTimeFormatter.ofPattern("dd MM yyyy"));
+            LocalDate query_end_date = LocalDate.parse(end_date, DateTimeFormatter.ofPattern("dd MM yyyy"));
+
+            for (Invoice invoice : invoiceRepository.findAll()) {
+                LocalDate tmp_date = LocalDate.parse(invoice.getDateCreated().toString().substring(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                if ((tmp_date.isAfter(query_start_date) || tmp_date.isEqual(query_start_date)) && ((tmp_date.isBefore(query_end_date) || tmp_date.isEqual(query_end_date)))) {
+                    tmp.add(invoice);
+                }
+            }
+
+        }
+
+        if (Objects.equals(start_date, "") && !Objects.equals(end_date, "")) {
+            LocalDate query_date = LocalDate.parse(end_date, DateTimeFormatter.ofPattern("dd MM yyyy"));
+
+            for (Invoice invoice : invoiceRepository.findAll()) {
+                LocalDate tmp_date = LocalDate.parse(invoice.getDateCreated().toString().substring(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                if (tmp_date.isBefore(query_date) || tmp_date.isEqual(query_date)) {
+                    tmp.add(invoice);
+                }
+            }
+
+        }
+        
+        return tmp;
+    }
+
+    @Override
+    public List<Invoice> searchInvoices(Long customer_id, Long driver_id, String start_date, String end_date) {
+        if (customer_id > 0 && driver_id > 0) {
+            throw new RuntimeException("Invalid Params!\n");
+        }
+
+        if (Objects.equals(start_date, "") || Objects.equals(end_date, "")) {
+            throw new RuntimeException("Invalid Params!\n");
+        }
+
+        List<Invoice> tmp = new ArrayList<>();
+        List<Invoice> result = new ArrayList<>();
+
+        LocalDate query_start_date = LocalDate.parse(start_date, DateTimeFormatter.ofPattern("dd MM yyyy"));
+        LocalDate query_end_date = LocalDate.parse(end_date, DateTimeFormatter.ofPattern("dd MM yyyy"));
+
+        if (customer_id > 0) {
+            Customer customer = customerRepository.findById(customer_id).orElseThrow(() -> new ResourceNotFoundException("Customer", "ID", customer_id));
+            tmp = customer.getInvoices();
+        }
+
+        if (driver_id > 0) {
+            Driver driver = driverRepository.findById(driver_id).orElseThrow(() -> new ResourceNotFoundException("Driver", "ID", driver_id));
+            tmp = driver.getInvoices();
+        }
+
+        for (Invoice invoice : tmp) {
+            LocalDate tmp_date = LocalDate.parse(invoice.getDateCreated().toString().substring(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+            if ((tmp_date.isAfter(query_start_date) || tmp_date.isEqual(query_start_date)) && ((tmp_date.isBefore(query_end_date) || tmp_date.isEqual(query_end_date)))) {
+                result.add(invoice);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public float getRevenue(Long customer_id, Long driver_id, String start_date, String end_date) {
+        float revenue = 0;
+
+        List<Invoice> tmp = searchInvoices(customer_id, driver_id, start_date, end_date);
+
+        for (Invoice invoice : tmp) {
+            revenue = revenue + invoice.getTotal_charge();
+        }
+
+        return revenue;
     }
 
     @Override

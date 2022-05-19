@@ -35,16 +35,16 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public Driver getDriver(Long id) {
-//        Optional<Driver> driver = driverRepository.findById(id);
-//
-//        if(driver.isPresent()) {
-//            return driver.get();
-//        } else {
-//            throw new ResourceNotFoundException("Driver", "ID", id);
-//        }
+        Optional<Driver> driver = driverRepository.findById(id);
 
-        return driverRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Driver", "ID", id));
+        if(driver.isPresent()) {
+            return driver.get();
+        } else {
+            throw new ResourceNotFoundException("Driver", "ID", id);
+        }
+
+//        return driverRepository.findById(id).orElseThrow(() ->
+//                new ResourceNotFoundException("Driver", "ID", id));
     }
 
     @Override
@@ -81,6 +81,10 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public Driver bookCar(Long driver_id, Long car_id) {
         Driver driver = driverRepository.findById(driver_id).orElseThrow(() -> new ResourceNotFoundException("Driver", "ID", driver_id));
+        if (driver.getCar() != null) {
+            throw new RuntimeException(String.format("Driver with ID %d already has already booked a car (Car %d)!\n", driver_id, driver.getCar().getId()));
+        }
+
         Car car = carRepository.findById(car_id).orElseThrow(() -> new ResourceNotFoundException("Car", "ID", car_id));
 
         if (car.isHaving_driver()) {
@@ -94,5 +98,22 @@ public class DriverServiceImpl implements DriverService {
         }
 
         return driver;
+    }
+
+    @Override
+    public String returnCar(Long driver_id) {
+        Driver driver = driverRepository.findById(driver_id).orElseThrow(() -> new ResourceNotFoundException("Driver", "ID", driver_id));
+
+        Car car = driver.getCar();
+        car.setAvailable(false);
+        car.setHaving_driver(false);
+        car.setDriver(null);
+
+        carRepository.save(car);
+
+//        driver.setCar(null);
+//        driverRepository.save(driver);
+
+        return String.format("Driver %d has successfully returned Car %d", driver_id, car.getId());
     }
 }

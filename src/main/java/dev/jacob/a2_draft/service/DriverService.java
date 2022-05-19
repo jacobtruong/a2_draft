@@ -11,4 +11,5 @@ public interface DriverService {
     Driver updateDriver(Driver driver, Long id);
     void deleteDriver(Long id);
     Driver bookCar(Long driver_id, Long car_id);
+    String returnCar(Long driver_id);
 }

@@ -30,6 +30,11 @@ public class DriverController {
         return new ResponseEntity<>(driverService.bookCar(driver_id, car_id), HttpStatus.OK);
     }
 
+    @PutMapping("{id}/returnCar")
+    public ResponseEntity<String> returnCar(@PathVariable("id") Long driver_id) {
+        return new ResponseEntity<String>(driverService.returnCar(driver_id), HttpStatus.OK);
+    }
+
     // Build get all drivers REST API
     @GetMapping
     public List<Driver> getAllDrivers() {

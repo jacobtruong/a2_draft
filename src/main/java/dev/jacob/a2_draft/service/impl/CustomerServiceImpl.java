@@ -8,8 +8,7 @@ import dev.jacob.a2_draft.service.CustomerService;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -73,5 +72,83 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
 
+    }
+
+    @Override
+    public List<Customer> searchCustomer(Long id, String name, String address, String phone) {
+        List<Customer> list = new ArrayList<>();
+
+        if (id > 0) {
+            list.add(customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer", "ID", id)));
+            return list;
+        }
+        
+        name = name.toUpperCase(Locale.ROOT);
+        address = address.toUpperCase(Locale.ROOT);
+        
+        if (!Objects.equals(name, "") && Objects.equals(address, "") && Objects.equals(phone, "")) {
+            for (Customer customer : customerRepository.findAll()) {
+                if (Objects.equals(customer.getFirst_name().toUpperCase(Locale.ROOT), name) || Objects.equals(customer.getLast_name().toUpperCase(Locale.ROOT), name)) {
+                    list.add(customer);
+                }
+            }
+            return list;
+        }
+
+        if (Objects.equals(name, "") && !Objects.equals(address, "") && Objects.equals(phone, "")) {
+            for (Customer customer : customerRepository.findAll()) {
+                if (Objects.equals(customer.getAddress().toUpperCase(Locale.ROOT), address)) {
+                    list.add(customer);
+                }
+            }
+            return list;
+        }
+
+        if (Objects.equals(name, "") && Objects.equals(address, "") && !Objects.equals(phone, "")) {
+            for (Customer customer : customerRepository.findAll()) {
+                if (Objects.equals(customer.getPhone_number(), phone)) {
+                    list.add(customer);
+                }
+            }
+            return list;
+        }
+
+        if (!Objects.equals(name, "") && !Objects.equals(address, "") && Objects.equals(phone, "")) {
+            for (Customer customer : customerRepository.findAll()) {
+                if ((Objects.equals(customer.getFirst_name().toUpperCase(Locale.ROOT), name) || Objects.equals(customer.getLast_name().toUpperCase(Locale.ROOT), name)) && Objects.equals(customer.getAddress().toUpperCase(Locale.ROOT), address)) {
+                    list.add(customer);
+                }
+            }
+            return list;
+        }
+
+        if (!Objects.equals(name, "") && Objects.equals(address, "") && !Objects.equals(phone, "")) {
+            for (Customer customer : customerRepository.findAll()) {
+                if ((Objects.equals(customer.getFirst_name().toUpperCase(Locale.ROOT), name) || Objects.equals(customer.getLast_name().toUpperCase(Locale.ROOT), name)) && Objects.equals(customer.getPhone_number(), phone)) {
+                    list.add(customer);
+                }
+            }
+            return list;
+        }
+
+        if (Objects.equals(name, "") && !Objects.equals(address, "") && !Objects.equals(phone, "")) {
+            for (Customer customer : customerRepository.findAll()) {
+                if (Objects.equals(customer.getAddress().toUpperCase(Locale.ROOT), address) && Objects.equals(customer.getPhone_number(), phone)) {
+                    list.add(customer);
+                }
+            }
+            return list;
+        }
+
+        if (!Objects.equals(name, "") && !Objects.equals(address, "") && !Objects.equals(phone, "")) {
+            for (Customer customer : customerRepository.findAll()) {
+                if ((Objects.equals(customer.getFirst_name().toUpperCase(Locale.ROOT), name) || Objects.equals(customer.getLast_name().toUpperCase(Locale.ROOT), name)) && Objects.equals(customer.getAddress().toUpperCase(Locale.ROOT), address) && Objects.equals(customer.getPhone_number(), phone)) {
+                    list.add(customer);
+                }
+            }
+            return list;
+        }
+
+        return null;
     }
 }

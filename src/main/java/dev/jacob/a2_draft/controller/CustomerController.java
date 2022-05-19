@@ -31,22 +31,28 @@ public class CustomerController {
         return customerService.getAllCustomers();
     }
 
+    // Build search customer
+    @GetMapping("/search")
+    public ResponseEntity<List<Customer>> searchCustomer(@RequestParam(defaultValue = "0") Long id, @RequestParam(defaultValue = "") String name, @RequestParam(defaultValue = "") String address, @RequestParam(defaultValue = "") String phone) {
+        return new ResponseEntity<List<Customer>>(customerService.searchCustomer(id, name, address, phone), HttpStatus.OK);
+    }
+
     // Build get customer by specific ID REST API
     // api/customers/1
     @GetMapping("{id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable("id") long id) {
+    public ResponseEntity<Customer> getCustomerById(@PathVariable("id") Long id) {
         return new ResponseEntity<Customer>(customerService.getCustomer(id), HttpStatus.OK);
     }
 
     // Build update customer REST API
     @PutMapping("{id}")
-    public ResponseEntity<Customer>updateCustomer(@PathVariable("id") long id, @RequestBody Customer customer) {
+    public ResponseEntity<Customer>updateCustomer(@PathVariable("id") Long id, @RequestBody Customer customer) {
         return new ResponseEntity<Customer>(customerService.updateCustomer(customer, id), HttpStatus.OK);
     }
 
     // Build delete customer REST API
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteCustomer(@PathVariable("id") long id) {
+    public ResponseEntity<String> deleteCustomer(@PathVariable("id") Long id) {
 
         String name = customerService.getCustomer(id).getFirst_name();
 

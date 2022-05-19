@@ -8,8 +8,12 @@ import dev.jacob.a2_draft.service.BookingService;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -40,17 +44,77 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Booking getBooking(Long id) {
-//        Optional<Booking> booking = bookingRepository.findById(id);
-//
-//        if(booking.isPresent()) {
-//            return booking.get();
-//        } else {
-//            throw new ResourceNotFoundException("Booking", "ID", id);
-//        }
+    public List<Booking> searchBookings(String date, String start_date, String end_date) {
+        List<Booking> tmp = new ArrayList<>();
 
-        return bookingRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Booking", "ID", id));
+        if (!Objects.equals(date, "")) {
+            LocalDate query_date = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd MM yyyy"));
+
+            for (Booking booking : bookingRepository.findAll()) {
+                LocalDate tmp_date = LocalDate.parse(booking.getDateCreated().toString().substring(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                if (tmp_date.isEqual(query_date)) {
+                    tmp.add(booking);
+                }
+            }
+
+            return tmp;
+        }
+
+        if (Objects.equals(start_date, "") && Objects.equals(end_date, "")) {
+            return tmp;
+        }
+
+        if (!Objects.equals(start_date, "") && Objects.equals(end_date, "")) {
+            LocalDate query_date = LocalDate.parse(start_date, DateTimeFormatter.ofPattern("dd MM yyyy"));
+
+            for (Booking booking : bookingRepository.findAll()) {
+                LocalDate tmp_date = LocalDate.parse(booking.getDateCreated().toString().substring(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                if (tmp_date.isAfter(query_date) || tmp_date.isEqual(query_date)) {
+                    tmp.add(booking);
+                }
+            }
+
+        }
+
+        if (!Objects.equals(start_date, "") && !Objects.equals(end_date, "")) {
+            LocalDate query_start_date = LocalDate.parse(start_date, DateTimeFormatter.ofPattern("dd MM yyyy"));
+            LocalDate query_end_date = LocalDate.parse(end_date, DateTimeFormatter.ofPattern("dd MM yyyy"));
+
+            for (Booking booking : bookingRepository.findAll()) {
+                LocalDate tmp_date = LocalDate.parse(booking.getDateCreated().toString().substring(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                if ((tmp_date.isAfter(query_start_date) || tmp_date.isEqual(query_start_date)) && ((tmp_date.isBefore(query_end_date) || tmp_date.isEqual(query_end_date)))) {
+                    tmp.add(booking);
+                }
+            }
+
+        }
+
+        if (Objects.equals(start_date, "") && !Objects.equals(end_date, "")) {
+            LocalDate query_date = LocalDate.parse(end_date, DateTimeFormatter.ofPattern("dd MM yyyy"));
+
+            for (Booking booking : bookingRepository.findAll()) {
+                LocalDate tmp_date = LocalDate.parse(booking.getDateCreated().toString().substring(0, 10), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                if (tmp_date.isBefore(query_date) || tmp_date.isEqual(query_date)) {
+                    tmp.add(booking);
+                }
+            }
+
+        }
+        return tmp;
+    }
+
+    @Override
+    public Booking getBooking(Long id) {
+        Optional<Booking> booking = bookingRepository.findById(id);
+
+        if(booking.isPresent()) {
+            return booking.get();
+        } else {
+            throw new ResourceNotFoundException("Booking", "ID", id);
+        }
+
+//        return bookingRepository.findById(id).orElseThrow(() ->
+//                new ResourceNotFoundException("Booking", "ID", id));
     }
 
     @Override
@@ -88,7 +152,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Booking createBooking(Long customer_id, Long car_id, String starting_location, String end_location, ZonedDateTime pick_up_time, ZonedDateTime drop_off_time, float distance) {
+    public Booking createBooking(Long customer_id, Long car_id, String starting_location, String end_location, float distance) {
         Car car = carRepository.findById(car_id).orElseThrow(() ->
                 new ResourceNotFoundException("Car", "ID", car_id));
 
@@ -105,8 +169,7 @@ public class BookingServiceImpl implements BookingService {
 
         booking.setStarting_location(starting_location);
         booking.setEnd_location(end_location);
-        booking.setPick_up_time(pick_up_time);
-        booking.setDrop_off_time(drop_off_time);
+        booking.setPick_up_time(ZonedDateTime.now());
         booking.setDistance(distance);
 
         Invoice invoice = new Invoice();
@@ -118,6 +181,8 @@ public class BookingServiceImpl implements BookingService {
 
         car.setAvailable(false);
 
+        booking.setCar(car);
+
 //        invoiceRepository.save(invoice);
 
         booking.setInvoice(invoice);
@@ -126,4 +191,24 @@ public class BookingServiceImpl implements BookingService {
 
         return booking;
     }
+
+    @Override
+    public Booking finishBooking(Long booking_id) {
+        Booking booking = bookingRepository.findById(booking_id).orElseThrow(() -> new ResourceNotFoundException("Booking", "ID", booking_id));
+
+        if (booking.getDrop_off_time() != null) {
+            throw new RuntimeException(String.format("Booking %d has already been completed.\n", booking_id));
+        }
+
+        booking.setDrop_off_time(ZonedDateTime.now());
+
+        Car car = booking.getInvoice().getDriver().getCar();
+
+        car.setAvailable(true);
+
+        bookingRepository.save(booking);
+
+        return booking;
+    }
+
 }
