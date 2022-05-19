@@ -5,6 +5,7 @@ import dev.jacob.a2_draft.model.Customer;
 import dev.jacob.a2_draft.repository.CustomerRepository;
 import dev.jacob.a2_draft.service.CustomerService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
@@ -21,7 +22,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer saveCustomer(Customer customer) {
-        return customerRepository.save(customer);
+        var tmp = customerRepository.save(customer);
+        return tmp;
     }
 
     @Override
@@ -70,8 +72,6 @@ public class CustomerServiceImpl implements CustomerService {
         } else {
             throw new ResourceNotFoundException("Customer", "ID", id);
         }
-
-
     }
 
     @Override

@@ -203,8 +203,12 @@ public class InvoiceServiceImpl implements InvoiceService {
     public Invoice createInvoice(Long customer_id, Long driver_id, float cost) {
         Invoice invoice = new Invoice();
 
-        invoice.setCustomer(customerRepository.getById(customer_id));
-        invoice.setDriver(driverRepository.getById(driver_id));
+        Customer customer = customerRepository.findById(customer_id).orElseThrow(() -> new ResourceNotFoundException("Customer", "ID", customer_id));
+
+        Driver driver = driverRepository.findById(driver_id).orElseThrow(() -> new ResourceNotFoundException("Driver", "ID", driver_id));
+
+        invoice.setCustomer(customer);
+        invoice.setDriver(driver);
         invoice.setTotal_charge(cost);
 
         invoiceRepository.save(invoice);

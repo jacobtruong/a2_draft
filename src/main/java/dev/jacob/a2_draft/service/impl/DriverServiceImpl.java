@@ -94,7 +94,7 @@ public class DriverServiceImpl implements DriverService {
             car.setDriver(driver);
             car.setAvailable(true);
             carRepository.save(car);
-            // driver.setCar(car);
+//            driver.setCar(car);
         }
 
         return driver;
